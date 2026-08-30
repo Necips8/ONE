@@ -63,7 +63,7 @@ Um die verborgene Struktur der raumlosen Einsen-Leinwand sichtbar zu machen, gen
 
 ### Der N-Exponent: Eine verallgemeinerte Leinwand
 
-Die ursprüngliche Bedingung $(x \mathbin{\&} y) = 0$ ist der Spezialfall $N = 1$ einer allgemeineren Familie: $(x^N \mathbin{\&} y^N) = 0$. Der Parameter $N$ wirkt als *exponentieller Skalierungsoperator* auf die Koordinaten, bevor die übertraglose Interferenz gemessen wird. Die `index.html` enthält einen interaktiven Regler, um $N$ in Echtzeit zu erkunden.
+Die ursprüngliche Bedingung $(x \& y) = 0$ ist der Spezialfall $N = 1$ einer allgemeineren Familie: $(x^N \& y^N) = 0$. Der Parameter $N$ wirkt als *exponentieller Skalierungsoperator* auf die Koordinaten, bevor die übertraglose Interferenz gemessen wird. Die `index.html` enthält einen interaktiven Regler, um $N$ in Echtzeit zu erkunden.
 
 Die Wirkung von $N$ offenbart eine verborgene Geometrie:
 
