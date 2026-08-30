@@ -82,7 +82,7 @@ Die Hypotenuse beider Flächen ergibt die **Illusion von 3D**.
 
 ---
 
-## 4 · Die Neunundachtzig
+## 4 · Die 81
 
 ```
 9 · 9 = 81
