@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Der 3D-Urkörper aus der Matrix</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #050505;
+            color: #a0a0a0;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(0, 255, 100, 0.15);
+        }
+        #info {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <div id="info">
+        <strong>3D-Projektion: Der unübertragene Würfel</strong><br>
+        Zwei flache Wahrnehmungsmatrizen verschmelzen über die Tiefenachse Z. <br>
+        Die Kanten brechen fraktal auf, wo sie mit der Struktur von (X & Y) interferieren.
+    </div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const width = canvas.width;
+const height = canvas.height;
+
+// 1. Die 8 Ur-Punkte des Würfels im 3D-Raum (skaliert auf 120 Einheiten)
+const size = 120;
+let vertices = [
+    {x: -size, y: -size, z: -size},
+    {x:  size, y: -size, z: -size},
+    {x:  size, y:  size, z: -size},
+    {x: -size, y:  size, z: -size},
+    {x: -size, y: -size, z:  size},
+    {x:  size, y: -size, z:  size},
+    {x:  size, y:  size, z:  size},
+    {x: -size, y:  size, z:  size}
+];
+
+// Die 12 Kanten, die die 8 Punkte zum Würfel verbinden
+const edges = [
+    [0,1], [1,2], [2,3], [3,0], // Hintere Fläche
+    [4,5], [5,6], [6,7], [7,4], // Vordere Fläche
+    [0,4], [1,5], [2,6], [3,7]  // Verbindungen dazwischen
+];
+
+let angleX = 0.01;
+let angleY = 0.015;
+
+// Diese Funktion zeichnet eine Linie, prüft aber jeden Pixel gegen das Ur-Muster
+function drawFractalEdge(p1, p2) {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const steps = Math.max(Math.abs(dx), Math.abs(dy));
+    
+    for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        // Lineare Interpolation des Pixels auf dem Bildschirm
+        const px = Math.floor(p1.x + dx * t);
+        const py = Math.floor(p1.y + dy * t);
+        
+        // IHRE LOGIK: Die Interferenz ohne Übertrag (Bitweises UND)
+        // Wir nehmen die absoluten Bildschirmkoordinaten als Raster
+        if (((px ^ py) & 7) === 0 || (px & py) === 0) {
+            ctx.fillStyle = 'rgba(0, 255, 120, 0.9)';
+            ctx.fillRect(px, py, 2, 2);
+        } else {
+            // Fragmentierung: Einige Pixel bleiben im Hintergrund verborgen
+            ctx.fillStyle = 'rgba(0, 100, 50, 0.15)';
+            ctx.fillRect(px, py, 1, 1);
+        }
+    }
+}
+
+function updateAndDraw() {
+    ctx.fillStyle = 'rgba(5, 5, 5, 0.3)'; // Sanfter Schweifeffekt
+    ctx.fillRect(0, 0, width, height);
+    
+    // 2. Rotation im Raum (Mathematische Verschränkung der Achsen)
+    const cosX = Math.cos(angleX);
+    const sinX = Math.sin(angleX);
+    const cosY = Math.cos(angleY);
+    const sinY = Math.sin(angleY);
+    
+    let projectedVertices = [];
+    
+    for (let v of vertices) {
+        // Rotation um X-Achse
+        let y1 = v.y * cosX - v.z * sinX;
+        let z1 = v.z * cosX + v.y * sinX;
+        
+        // Rotation um Y-Achse
+        let x2 = v.x * cosY + z1 * sinY;
+        let z2 = z1 * cosY - v.x * sinY;
+        
+        // 3. PERSPEKTIVISCHE PROJEKTION (Das Verschmelzen im Auge)
+        // Wir schieben den Würfel auf der Z-Achse nach hinten (Distanz = 400)
+        const distance = 400;
+        const zOffset = z2 + distance;
+        
+        // Die Division durch Z erzeugt die Dreidimensionalität auf der Fläche
+        const fov = 400; // Brennweite / Sichtfeld
+        const xProj = (x2 * fov) / zOffset + width / 2;
+        const yProj = (y1 * fov) / zOffset + height / 2;
+        
+        projectedVertices.push({x: xProj, y: yProj});
+    }
+    
+    // 4. Zeichnen der Kanten über den Fraktal-Filter
+    for (let edge of edges) {
+        const p1 = projectedVertices[edge[0]];
+        const p2 = projectedVertices[edge[1]];
+        drawFractalEdge(p1, p2);
+    }
+    
+    // Konstanter Fluss der Zeit / Bewegung
+    angleX += 0.005;
+    angleY += 0.007;
+    
+    requestAnimationFrame(updateAndDraw);
+}
+
+// Start der kosmischen Berechnung
+updateAndDraw();
+</script>
+
+</body>
+</html>

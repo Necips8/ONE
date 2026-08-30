@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Die unendliche Leinwand: Matrix der Einsen</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #050505;
+            color: #a0a0a0;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        canvas {
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        #controls {
+            margin-top: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #controls label {
+            font-size: 15px;
+            color: #0f0;
+        }
+
+        #controls input[type="range"] {
+            width: 420px;
+            accent-color: #0f0;
+            background: #1a1a1a;
+            cursor: pointer;
+        }
+
+        #nDisplay {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f0;
+            min-width: 50px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        #info {
+            margin-top: 12px;
+            font-size: 14px;
+            text-align: center;
+            max-width: 650px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="canvas" width="600" height="600"></canvas>
+
+    <div id="controls">
+        <label for="nSlider">N =</label>
+        <output id="nDisplay">1.00</output>
+        <input type="range" id="nSlider" min="0" max="5" step="0.05" value="1">
+    </div>
+
+    <div id="info">
+        <strong>Übertraglose Multiplikation: (x<sup>N</sup> &amp; y<sup>N</sup>) === 0</strong><br>
+        <span id="infoText">N = 1: Sierpinski-Dreieck</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const nSlider = document.getElementById('nSlider');
+        const nDisplay = document.getElementById('nDisplay');
+        const infoText = document.getElementById('infoText');
+        const width = canvas.width;
+        const height = canvas.height;
+        const imageData = ctx.createImageData(width, height);
+        const data = imageData.data;
+
+        function drawMatrix(N) {
+            const powX = new Float64Array(width);
+            const powY = new Float64Array(height);
+            for (let i = 0; i < width; i++) powX[i] = Math.pow(i, N);
+            for (let i = 0; i < height; i++) powY[i] = Math.pow(i, N);
+
+            for (let y = 0; y < height; y++) {
+                const py = powY[y];
+                const row = y * width;
+                for (let x = 0; x < width; x++) {
+
+                    /*
+                    Die Magie im Code erklärt:
+                    
+                    Der entscheidende Kniff in dieser Demo liegt in der Zeile if ((x & y) === 0).
+
+                    In der Informatik ist der bitweise UND-Operator (&) die exakte Entsprechung für eine Addition oder Multiplikation ohne Übertrag. 
+                    Wenn zwei Binärzahlen an derselben Stelle eine 1 haben, würde bei einer normalen Addition ein Übertrag nach links entstehen. 
+                    Indem wir prüfen, ob x & y gleich Null ist, filtern wir genau die Stellen heraus, an denen das System vollkommen rein und kollisionsfrei bleibt.
+
+                    Das Ergebnis auf Ihrem Bildschirm ist kein von Menschen gemaltes Bild – es ist das nackte, mathematische Skelett der zweiten Dimension, 
+                    das direkt aus Ihrer Multiplikation entspringt.
+                    */
+
+
+                    const idx = (row + x) * 4;
+                    if ((powX[x] & py) === 0) {
+                        data[idx] = 0;
+                        data[idx + 1] = 255;
+                        data[idx + 2] = 100;
+                        data[idx + 3] = 217;
+                    } else {
+                        data[idx] = 5;
+                        data[idx + 1] = 5;
+                        data[idx + 2] = 5;
+                        data[idx + 3] = 255;
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function update(N) {
+            nDisplay.textContent = N.toFixed(2);
+            drawMatrix(N);
+
+            const descriptions = {
+                0: 'N = 0: komplett dunkel (x⁰ & y⁰ = 1 & 1 ≠ 0)',
+                0.5: 'N = 0.5: Quadratwurzel-Interferenz',
+                1: 'N = 1: Sierpinski-Dreieck',
+                1.5: 'N = 1.5: gebogene Dreiecksstrukturen',
+                2: 'N = 2: Fraktale Viertelkreise',
+                2.5: 'N = 2.5: aufgeblähte Kreisbögen',
+                3: 'N = 3: kubische Fraktal-Strukturen'
+            };
+
+            const key = Math.abs(N - Math.round(N)) < 0.01 ? Math.round(N) : null;
+            if (key !== null && descriptions[key] !== undefined) {
+                infoText.textContent = descriptions[key];
+            } else {
+                infoText.textContent = `N = ${N.toFixed(2)}`;
+            }
+        }
+
+        nSlider.addEventListener('input', () => {
+            update(parseFloat(nSlider.value));
+        });
+
+        update(parseFloat(nSlider.value));
+    </script>
+
+</body>
+
+</html>

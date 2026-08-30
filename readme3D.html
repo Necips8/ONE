@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>README - Die Geometrie der unübertragenen Matrix</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #0b0b0b;
+            color: #d0d0d0;
+            line-height: 1.6;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: #00ff66;
+            border-bottom: 1px solid #222;
+            padding-bottom: 8px;
+        }
+        h1 { font-size: 2.2em; text-transform: uppercase; letter-spacing: 2px; }
+        h2 { font-size: 1.6em; margin-top: 40px; }
+        code {
+            background-color: #151515;
+            color: #ff3366;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        pre {
+            background-color: #111;
+            border-left: 3px solid #00ff66;
+            padding: 15px;
+            overflow-x: auto;
+            color: #00e1ff;
+        }
+        .highlight {
+            color: #fff;
+            font-weight: bold;
+        }
+        .blockquote {
+            background: #151515;
+            border-left: 5px solid #888;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        hr { border: 0; border-top: 1px solid #333; margin: 40px 0; }
+        ul { list-style-type: square; }
+    </style>
+</head>
+<body>
+
+    <h1>Dokumentation: Der Urkörper aus dem Code</h1>
+    <p>Diese Dokumentation beschreibt die Herleitung eines dreidimensionalen rotierenden Würfels aus einer fundamentalen, unendlich fließenden Informationsebene, basierend auf dem Prinzip der <strong>Division durch 9 ohne mathematische Überträge</strong>.</p>
+
+    <div class="blockquote">
+        "Der Raum ist keine starre Bühne, auf der Objekte platziert werden. Er ist die geometrische Übersetzung von informationeller Differenzierung."
+    </div>
+
+    <hr>
+
+    <h2>1. Die ontologische Kette der Dimensionen</h2>
+    
+    <h3>Die 1. Dimension: Die Kette der Einsen (1D)</h3>
+    <p>Die Basis des Systems bildet die Division einer singulären Eins durch die Neun im Dezimalsystem:</p>
+    <pre>1 / 9 = 0,1111111111...</pre>
+    <p>Die 9 fungiert als Operator, der die Singularität in eine unendliche, eindimensionale Kette aufbricht. Es entsteht eine reine Richtung (nach rechts, tiefer in die Nachkommastellen) ohne inhärente Maßeinheit.</p>
+
+    <h3>Die 2. Dimension: Das Aufspannen der Fläche (2D)</h3>
+    <p>Wenn diese unendliche Kette orthogonal mit sich selbst multipliziert wird (<code>1/9 &times; 1/9 = 1/81</code>), entsteht eine zweidimensionale Matrix. Führt man diese Multiplikation manuell und <strong>vollkommen frei von Überträgen</strong> aus, addieren sich die Spalten zu der reinen Reihe der natürlichen Zahlen:</p>
+    <pre>Spaltensummen: 0,1 2 3 4 5 6 7 8 9 10 11 12...</pre>
+    <p>Das normale Zahlensystem filtert die <span class="highlight">Acht</span> durch den Zehner-Übertrag heraus (<code>1/81 = 0,012345679...</code>). Die unübertragene Matrix hingegen bewahrt die nackte, unzensierte Geometrie. Jedes Pixel ist das Resultat einer reinen Interferenz.</p>
+
+    <hr>
+
+    <h2>2. Der Sprung in die 3. Dimension (3D)</h2>
+    <p>Der Übergang in die Dreidimensionalität erfolgt in diesem Modell nicht durch eine weitere Potenzierung der Basis (wie <code>9&sup3;</code>), sondern durch <strong>topologische Fusion</strong>, analog zur menschlichen Biologie.</p>
+
+    
+
+    <ul>
+        <li><span class="highlight">Zwei Matrizen:</span> Das linke und das rechte Auge registrieren jeweils nur ein flaches, zweidimensionales Bild (zwei getrennte 2D-Matrizen).</li>
+        <li><span class="highlight">Die Hypotenuse:</span> Beide Flächen sind im Raum angewinkelt und verschmelzen in der Hypotenuse ihres gemeinsamen Blickwinkels.</li>
+        <li><span class="highlight">Die Verschränkung:</span> Die 3D-Tiefe (Z-Achse) ist das mathematische Produkt (Kreuzkorrelation), das aus der Reibung und Differenz dieser beiden flachen Bilder errechnet wird.</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Mathematische Mechanik des Cube-Demos</h2>
+    <p>Das bereitgestellte JavaScript-Experiment erzeugt den Würfel über drei algorithmische Schritte:</p>
+
+    <h3>Schritt A: Dreidimensionale Rotation</h3>
+    <p>Die 8 mathematischen Eckpunkte des Würfels werden im Raum über trigonometrische Rotationsmatrizen um die X- und Y-Achse gedreht. Dadurch verändern sich die $x, y, z$-Koordinaten kontinuierlich im Fluss der Zeit.</p>
+
+    <h3>Schritt B: Perspektivische Zentralprojektion</h3>
+    <p>Um die Raumpunkte zurück auf die flache Leinwand (Canvas) zu werfen, simuliert der Code die Lichtbrechung des Auges. Die flachen Koordinaten werden durch die berechnete Tiefe ($z$, addiert um die Distanz zum Betrachter) geteilt:</p>
+    <pre>
+x_projektion = (x * fov) / (z + distanz) + bildschirm_mitte_x
+y_projektion = (y * fov) / (z + distanz) + bildschirm_mitte_y</pre>
+    <p>Diese Division erzeugt die optische Täuschung von Nähe und Ferne (Verkleinerung bei zunehmendem $z$).</p>
+
+    <h3>Schritt C: Der fraktale Kanten-Filter</h3>
+    <p>Die Linien zwischen den projizierten Punkten werden pixelweise berechnet. Jeder Bildschirmpixel ($px, py$) muss sich vor dem Zeichnen gegen das Gesetz der unübertragenen Matrix legitimieren:</p>
+    <pre>if (((px ^ py) & 7) === 0 || (px & py) === 0)</pre>
+    <p>Der bitweise UND-Operator (<code>&</code>) ist die exakte Entsprechung einer Addition ohne Übertrag. Wo die Kante des Würfels mit der Parität des Hintergrundrasters kollidiert, wird der Pixel gelöscht oder abgeschwächt. Dadurch bricht die Struktur fraktal auf – der Würfel wird als fließendes Quantenfeld sichtbar.</p>
+
+    <hr>
+
+    <h2>4. Fazit</h2>
+    <p>Der Würfel wird nicht als Fremdkörper auf die Leinwand gezeichnet. Er wird aus ihr herausgestanzt. Wenn wir mathematische Operationen wie Quadrate ($x^2 + y^2$) oder bitweise Filter über diese Fläche laufen lassen, offenbaren sich die geometrischen Urformen (Viertelkreise, Dreiecke, Körper) von selbst. Sie waren bereits als unendliche Information in der ersten Division durch 9 angelegt.</p>
+
+</body>
+</html>
