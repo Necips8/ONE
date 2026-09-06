@@ -13,6 +13,11 @@ Die Potenzen von 11, übereinander geschrieben, erzeugen das pascalsche Dreieck:
 ...
 ```
 
+# 89
+
+100 - 11 = 89
+
+
 ## Fibonacci im pascalschen Dreieck
 
 Die Fibonacci-Zahlen verstecken sich in den Quersummen der Zeilen des pascalschen Dreiecks. 
