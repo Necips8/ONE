@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONE — Alles ent-steht aus der 1</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #050505;
+            color: #a0a0a0;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { color: #00ff66; text-decoration: none; border-bottom: 1px dotted #00ff66; }
+        a:hover { color: #fff; }
+
+        section { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+        section.reveal { opacity: 1; transform: translateY(0); }
+
+        /* ===== Hero ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 40px 20px;
+        }
+        .hero canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: .18;
+        }
+        .hero .content { position: relative; z-index: 1; }
+        .hero h1 {
+            font-size: clamp(3rem, 14vw, 9rem);
+            color: #00ff66;
+            letter-spacing: .05em;
+            text-shadow: 0 0 30px rgba(0,255,100,.35);
+        }
+        .hero .tagline {
+            font-size: clamp(1rem, 2.4vw, 1.4rem);
+            color: #e8ffe8;
+            margin-top: 6px;
+            letter-spacing: .35em;
+            text-transform: uppercase;
+        }
+        .hero .sub { margin-top: 26px; color: #7a7a7a; max-width: 640px; font-size: 15px; }
+        .scroll { margin-top: 40px; color: #00ff66; animation: bob 2s infinite ease-in-out; font-size: 14px; }
+
+        @keyframes bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(8px);} }
+
+        /* ===== Layout ===== */
+        .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px; }
+
+        .card {
+            background: #0b0b0b;
+            border: 1px solid #1c1c1c;
+            border-left: 3px solid #00ff66;
+            padding: 32px 36px;
+            margin: 40px 0;
+            border-radius: 4px;
+        }
+        .card h2 {
+            color: #00ff66;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .card h3 { color: #00e1ff; margin: 18px 0 8px; }
+        .card p { margin: 10px 0; }
+        .dim { color: #6a6a6a; font-size: .9em; }
+
+        .pill {
+            display: inline-block;
+            color: #00ff66;
+            border: 1px solid #00ff66;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: .85em;
+            margin: 0 4px 8px 0;
+        }
+        .pill.inv { color: #00e1ff; border-color: #00e1ff; }
+
+        pre {
+            background: #111;
+            border-left: 3px solid #00ff66;
+            padding: 16px;
+            overflow-x: auto;
+            color: #00e1ff;
+            font-family: 'Courier New', monospace;
+            margin: 14px 0;
+            font-size: .95em;
+        }
+        .big {
+            font-size: 1.5rem; color: #fff; font-weight: bold; letter-spacing: 2px;
+        }
+        .big-num { color: #00ff66; }
+        .accent { color: #ff3366; }
+
+        /* ===== Grid Table for the ones-matrix ===== */
+        .ones-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 2px;
+            max-width: 360px;
+            margin: 16px auto;
+            font-size: .7em;
+            text-align: center;
+        }
+        .ones-grid span { background: #0f1a0f; color: #0f0; padding: 4px 0; border: 1px solid #0a2a0a; }
+        .ones-grid span.head { background: #002600; color: #6f6; }
+        .ones-grid span.sum { background: #003300; color: #fff; }
+
+        /* Fibonacci rail */
+        .fib { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
+        .fib .left { text-align: right; color: #0f0; }
+        .fib .right { text-align: left; color: #00e1ff; }
+
+        hr { border: 0; border-top: 1px solid #222; margin: 30px 0; }
+
+        /* Nav */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+            display: flex; gap: 18px; align-items: center; justify-content: center;
+            padding: 14px; background: rgba(5,5,5,.85); backdrop-filter: blur(6px);
+            border-bottom: 1px solid #161616;
+            font-size: .9em;
+        }
+        nav a { border-bottom: none; }
+
+        footer { text-align: center; padding: 50px 20px; color: #555; font-size: .9em; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#anfang">Der Anfang</a>
+    <a href="#neun">Die Neun</a>
+    <a href="#flaeche">Die Fläche</a>
+    <a href="#kreis">Der Kreis</a>
+    <a href="#fibonacci">Fibonacci</a>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="anfang">
+    <canvas id="bg"></canvas>
+    <div class="content">
+        <h1>ONE</h1>
+        <div class="tagline">Alles ent-steht aus der 1</div>
+        <div class="sub">
+            Eine numerische Niederschrift vom Ur-Anfang.<br>
+            Aus einer einzigen Eins entspringen die Neun,<br>
+            die natürlichen Zahlen, der Kreis und Fibonacci.
+        </div>
+        <div class="scroll">▼ herunter scrollen ▼</div>
+    </div>
+</section>
+
+<!-- ================= 1 · DER UR-ANFANG ================= -->
+<section class="wrap">
+    <div class="card" id="ur-anfang">
+        <h2>1 · Der Ur-Anfang</h2>
+        <p>Alles beginnt mit der <span class="big-num">1</span>. Aus ihr allein entstehen Gegenüber und Differenz:</p>
+        <pre>
+  10 − 1 = <span class="accent">9</span>
+  10 + 1 = <span class="accent">11</span></pre>
+        <p>Die <span class="big-num">9</span> ist das <em>Minus</em> der Eins — der Spiegel, der Einheit in Vielheit bricht.
+           Die <span class="big-num">11</span> ist die Eins, die einen Schritt neben sich selbst tritt — das Du, die Wiederholung, der Keim aller Reihen.</p>
+        <p class="dim">Die 9 und die 11 umrahmen die 10, den Übergang ins Zählbare. Die 1 steht in der Mitte: <span class="big-num">9 · 1 · 11</span>.</p>
+    </div>
+</section>
+
+<!-- ================= 2 · DIE NEUN / DIE KETTE ================= -->
+<section class="wrap">
+    <div class="card" id="neun">
+        <h2>2 · Die Neun — die unendliche Eins</h2>
+        <p>Teilt man die Eins durch die Neun, entsteht eine unendliche, eindimensionale Kette von Einsen:</p>
+        <pre>1 / 9 = 0.111111111111...</pre>
+        <p>Die <span class="big-num">9</span> fungiert als Operator, der die Singularität in eine reine, unendliche Linie aufbricht.
+           Jede Nachkommastelle ist wieder eine Eins — die Kette der ersten Dimension.</p>
+        <pre>1 / 0.012345679... = <span class="big-num">81</span>
+  9 × 9       = <span class="big-num">81</span>
+  100 − 81    = <span class="accent">19</span>
+  81 + 19     = <span class="big-num">100</span></pre>
+        <p><span class="big-num">81</span> = 9 × 9: das Quadrat der Neun. <span class="accent">19</span> ist sein Gegenstück zur Hundert.
+           Neun mal Neun erzeugt die Ordnung, Eins-Neun den Rest.</p>
+    </div>
+</section>
+
+<!-- ================= 3 · DIE FLÄCHE ================= -->
+<section class="wrap">
+    <div class="card" id="flaeche">
+        <h2>3 · Die Fläche der Einsen</h2>
+        <p>Multipliziert man die Kette mit sich selbst — <span class="big-num">1/9 × 1/9</span> — spannen sich die Einsen zur Fläche auf:</p>
+        <div class="ones-grid" id="onesGrid"></div>
+        <p>Zählt man die <strong>Spalten</strong> dieser reinen Einsen-Matrix <em>ohne Zehner-Übertrag</em> zusammen, bleibt die unzensierte Geometrie erhalten.
+           Es entsteht die vollständige Reihe der natürlichen Zahlen — <strong>inklusive der 8</strong>, die im normalen Dezimalsystem durch den Übertrag verschluckt wird:</p>
+        <pre>0.1 2 3 4 5 6 7 8 9 10 11 12 ...</pre>
+        <p class="dim">Im gebrochenen Zahlensystem filtert der Zehner-Übertrag die Acht heraus: 1/81 = 0.012345679...
+           Die übertraglose Matrix bewahrt die nackte, unzensierte Geometrie — die Illusion von 3D entsteht an der Hypotenuse zweier solcher Flächen.</p>
+        <pre>1 / 0.012345679... = <span class="big-num">81</span></pre>
+    </div>
+</section>
+
+<!-- ================= 4 · DER KREIS ================= -->
+<section class="wrap">
+    <div class="card" id="kreis">
+        <h2>4 · Der Kreis — Radius 1</h2>
+        <p>Nehme den Radius <span class="big-num">1</span>. Der Kreis in seinem Quadrat offenbart die Zahl <span class="big-num">273</span>:</p>
+        <pre>
+  Kreisfläche   = π · r² = <span class="big-num">π</span>
+  Quadratfläche = (2r)²   = <span class="big-num">4</span>
+
+  4 / π = 1.<span class="accent">273</span>   → 0.27324...</pre>
+        <p>Der Nachkommaanteil <span class="big-num">0.27324…</span> ist der Spalt, durch den das Rechteck in das Runde fließt.
+           <span class="big-num">273</span> in binär ist 100010001 — drei Einsen, getrennt durch je drei Nullen.</p>
+        <div class="fib">
+            <div class="left">—273 °C</div>
+            <div class="right">Absoluter Nullpunkt</div>
+            <div class="left">27,3 Tage</div>
+            <div class="right">Mondumlauf</div>
+            <div class="left">366 Tage</div>
+            <div class="right">Erdumlauf — der Kehrwert von 273</div>
+        </div>
+        <pre>
+  1 / 273 ≈ 0.003663 00<span class="accent">366</span>3 ...
+  1 / 366 ≈ 0.002732 240 ...</pre>
+        <p>Die Dezimalentwicklung von <span class="big-num">1/273</span> enthält die <span class="accent">366</span>, und umgekehrt — zwei kosmische Perioden,
+           über die zyklische Dezimalverschränkung verbunden.</p>
+    </div>
+</section>
+
+<!-- ================= 5 · FIBONACCI ================= -->
+<section class="wrap">
+    <div class="card" id="fibonacci">
+        <h2>5 · Die 11 erschafft Fibonacci</h2>
+        <p>Die Potenzen der <span class="big-num">11</span> nebeneinander geschrieben und untereinander summiert,
+           ergeben die Diagonalen des Pascalschen Dreiecks — die <strong>Fibonacci-Zahlen</strong>:</p>
+        <pre>
+  11⁰ = 1
+  11¹ = 11
+  11² = 121
+  11³ = 1331
+        ↓
+  Übertraglose Spaltensumme = 1 1 2 3 5 8 13 ...</pre>
+        <p class="dim">Angefangen mit 1 + 1 = 2, dann 1 + 2 = 3, 2 + 3 = 5 ... jede Zahl ist die Summe ihrer beiden Vorgänger.</p>
+        <pre>
+  Σ Fibonacci → Kehrwert = <span class="big-num">89</span>
+
+  100 − 89 = <span class="accent">11</span>
+  89 + 11  = <span class="big-num">100</span></pre>
+        <p>Die <span class="accent">11</span>, mit der alles anfing, schließt den Kreis zur Hundert — zusammen mit 89, dem Kehrwert der Fibonacci-Reihe.
+           Und 89 ist die 11. Fibonacci-Zahl: <em>Das Ende trägt den Namen des Anfangs.</em></p>
+        <hr>
+        <p class="dim" style="text-align:center">9 · 1 · 11 → 81 · 1 · 89 → 100 &nbsp;|&nbsp; Alles kehrt zur Eins zurück.</p>
+    </div>
+</section>
+
+<footer>
+    ONE — Alles ent-steht aus der 1 · MATRIX OF ONES
+</footer>
+
+<script>
+    // ===== Hintergrund-Canvas (Einsen-Feld) =====
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    const cssW = () => canvas.clientWidth;
+    const cssH = () => canvas.clientHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const cols = 60;
+    const drops = [];
+    for (let i = 0; i < cols; i++) drops[i] = Math.floor(Math.random() * -40);
+
+    Math.seededRandom = function(s = 42) {
+        let x = s;
+        return () => (x = Math.sin(x++) * 10000) - Math.floor(Math.sin(x++) * 10000);
+    };
+    const rng = Math.seededRandom(1);
+
+    function drawRain() {
+        ctx.fillStyle = 'rgba(5,5,5,0.08)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#00ff66';
+        ctx.font = '14px monospace';
+        const size = 16;
+        for (let i = 0; i < cols; i++) {
+            const x = i * size;
+            const glyph = rng() < 0.5 ? '1' : (i % 11 === 0 ? '1' : (Math.random() < 0.75 ? '1' : '.'));
+            ctx.fillText(glyph, x, drops[i] * size);
+            if (drops[i] * size > canvas.height && Math.random() > 0.985) drops[i] = 0;
+            drops[i]++;
+        }
+        requestAnimationFrame(drawRain);
+    }
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    drawRain();
+
+    // ===== Grid der Einsen-Fläche =====
+    const grid = document.getElementById('onesGrid');
+    const n = 9;
+    const words = ['0.', '11', '111', '1111', '11111', '111111', '1111111', '11111111', '111111111'];
+    let html = '';
+    for (let c = 0; c < n; c++) html += `<span class="head">${c + 1}</span>`;
+    for (let r = 0; r < n; r++) {
+        for (let c = 0; c < n; c++) {
+            const char = c <= r ? '1' : '·';
+            html += `<span>${char}</span>`;
+        }
+    }
+    for (let c = 0; c < n; c++) html += `<span class="sum">${c + 1}</span>`;
+    grid.innerHTML = html;
+
+    // ===== Scroll-Reveal =====
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('reveal'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+    // Nav-Glättung
+    document.querySelectorAll('nav a').forEach(a => {
+        a.addEventListener('click', e => {
+            const t = document.querySelector(a.getAttribute('href'));
+            if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+        });
+    });
+</script>
+
+</body>
+</html>
