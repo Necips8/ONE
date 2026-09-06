@@ -17,6 +17,8 @@ Die Potenzen von 11, übereinander geschrieben, erzeugen das pascalsche Dreieck:
 
 Die Fibonacci-Zahlen verstecken sich in den Quersummen der Zeilen des pascalschen Dreiecks. 
 
+![Fibonacci und Pascal](fibonacciPascal.webp)
+
 ## Die 89-Verbindung
 
 Addiert man die Fibonacci-Zahlen versetzt untereinander und bildet die Summe, ergibt sich die Zahl **11235951**. Der Kehrwert dieser Zahl nähert sich **89**:
@@ -40,7 +42,7 @@ Addiert man die Fibonacci-Zahlen versetzt untereinander und bildet die Summe, er
 
 ## Spiegelbild und Dezimalstellen
 
-Setzt man 89 zwischen jeweils zwischen zwei Neunen (also **...9 89 9...**), erscheinen die Fibonacci-Zahlen elegant als Nachkommastellen:
+Setzt man 89 zwischen jeweils zwischen zwei Neunen (also **...9 89 9...**), erscheinen die Fibonacci-Zahlen elegant als Nachkommastellen im Kehrwert:
 
 https://www.mathsisfun.com/calculator-precision.html
 
