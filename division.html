@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1/7 — Fraktale Rekursion & Dimensionen</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #080911;
+            color: #e0e6ed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            height: 100%;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #ui-panel {
+            width: 380px;
+            background: rgba(15, 18, 28, 0.85);
+            backdrop-filter: blur(12px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #64ffda;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            font-size: 0.85rem;
+            color: #8892b0;
+            margin-top: -15px;
+        }
+        .math-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            color: #ccd6f6;
+        }
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 4px;
+        }
+        .stat-label { color: #8892b0; }
+        .stat-value { color: #64ffda; font-weight: bold; font-family: monospace; }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        label {
+            font-size: 0.85rem;
+            color: #a8b2d1;
+            display: flex;
+            justify-content: space-between;
+        }
+        input[type=range] {
+            width: 100%;
+            accent-color: #64ffda;
+            background: #172a45;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+        .btn {
+            background: transparent;
+            border: 1px solid #64ffda;
+            color: #64ffda;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .btn:hover {
+            background: rgba(100, 255, 218, 0.1);
+            box-shadow: 0 0 12px rgba(100, 255, 218, 0.2);
+        }
+        .explanation {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #8892b0;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="ui-panel">
+        <h1>1/7 — FRAKTALE REKURSION</h1>
+        <div class="subtitle">Dimensionale Projektion auf 1D</div>
+
+        <div class="math-box">
+            $$\frac{1}{7} = \frac{1}{10} \sum_{n=0}^{\infty} \left(\frac{3}{10}\right)^n$$
+        </div>
+
+        <div class="stat-group">
+            <div class="stat-row">
+                <span class="stat-label">Tiefe (Dimension n):</span>
+                <span class="stat-value" id="val-depth">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Aktuelle Potenz (3ⁿ):</span>
+                <span class="stat-value" id="val-power">1</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Beitrag (3ⁿ / 10ⁿ⁺¹):</span>
+                <span class="stat-value" id="val-term">0.10000000</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Akkumulierte Summe:</span>
+                <span class="stat-value" id="val-sum">0.10000000</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Zielwert (1/7):</span>
+                <span class="stat-value">0.14285714...</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Fehler (Differenz):</span>
+                <span class="stat-value" id="val-error">0.04285714</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <label>
+                <span>Maximale Rekursionstiefe</span>
+                <span id="label-max-depth">7</span>
+            </label>
+            <input type="range" id="slider-depth" min="1" max="10" value="7">
+
+            <label>
+                <span>Animationsgeschwindigkeit</span>
+            </label>
+            <input type="range" id="slider-speed" min="1" max="10" value="3">
+
+            <button class="btn" id="btn-restart">Simulation Neustarten</button>
+        </div>
+
+        <div class="explanation">
+            <strong>Geometrische Interpretation:</strong><br>
+            Jede Verzweigung schrumpft um den Faktor $3/10$. Die räumlichen Drehungen repräsentieren den Entfaltungsraum der Potenz $3^n$. Die goldenen Lichtpartikel projizieren die höherdimensionalen Volumina zurück auf die zentrale vertikale Achse, wo sie sich exakt zur Zahl 1/7 verdichten.
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // UI-Elemente
+        const valDepth = document.getElementById('val-depth');
+        const valPower = document.getElementById('val-power');
+        const valTerm = document.getElementById('val-term');
+        const valSum = document.getElementById('val-sum');
+        const valError = document.getElementById('val-error');
+        const sliderDepth = document.getElementById('slider-depth');
+        const sliderSpeed = document.getElementById('slider-speed');
+        const labelMaxDepth = document.getElementById('label-max-depth');
+        const btnRestart = document.getElementById('btn-restart');
+
+        let width, height;
+        let maxDepth = parseInt(sliderDepth.value);
+        let currentProgress = 0; // Kontinuierlicher Fortschritt (0 bis maxDepth)
+        let animationSpeed = 0.005;
+
+        function resize() {
+            width = canvas.width = canvas.parentElement.clientWidth;
+            height = canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        sliderDepth.addEventListener('input', (e) => {
+            maxDepth = parseInt(e.target.value);
+            labelMaxDepth.textContent = maxDepth;
+        });
+
+        sliderSpeed.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            animationSpeed = val * 0.0015;
+        });
+
+        btnRestart.addEventListener('click', () => {
+            currentProgress = 0;
+        });
+
+        // Berechnet die Summe bis zum Grad n
+        function calculateSeries(nTerms) {
+            let sum = 0;
+            for (let n = 0; n < nTerms; n++) {
+                sum += Math.pow(3, n) / Math.pow(10, n + 1);
+            }
+            return sum;
+        }
+
+        function drawTree(x, y, length, angle, depth, maxD, progress) {
+            if (depth > progress || depth >= maxD) return;
+
+            // Wie stark ist dieser spezifische Ast ausgefahren (0.0 bis 1.0)
+            const localProgress = Math.min(1, Math.max(0, progress - depth));
+            const currentLength = length * localProgress;
+
+            const endX = x + Math.cos(angle) * currentLength;
+            const endY = y + Math.sin(angle) * currentLength;
+
+            // Farbverlauf basierend auf Tiefe (Higher Dimensions = kühler/heller)
+            const hue = (160 + depth * 35) % 360;
+            const alpha = Math.max(0.2, 1 - depth * 0.08);
+            
+            ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha})`;
+            ctx.lineWidth = Math.max(1, 6 - depth * 0.6);
+
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            // Partikel/Lichtpunkte an den Verzweigungen
+            if (localProgress > 0.8) {
+                ctx.fillStyle = `hsla(${hue}, 100%, 75%, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(endX, endY, Math.max(1.5, 4 - depth * 0.3), 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (localProgress >= 1.0) {
+                // Rekursiver Wuchs: 3 Äste als Symbol für die Basis 3
+                // Der Winkel und die Verkürzung spiegeln das Verhältnis 3/10 wider
+                const nextLength = length * 0.68; 
+                const spread = 0.75 + (depth * 0.02); // Leichtes Auffächern
+
+                drawTree(endX, endY, nextLength, angle - spread, depth + 1, maxD, progress);
+                drawTree(endX, endY, nextLength, angle, depth + 1, maxD, progress);
+                drawTree(endX, endY, nextLength, angle + spread, depth + 1, maxD, progress);
+            }
+
+            // Projektionslinien zur zentralen Skala (Das "Einsammeln" der Dimensionen)
+            if (depth > 0 && localProgress > 0.5) {
+                const projectionAlpha = (1 - (depth / maxD)) * 0.15 * localProgress;
+                ctx.strokeStyle = `rgba(255, 215, 0, ${projectionAlpha})`;
+                ctx.setLineDash([2, 4]);
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                // Projiziere auf die vertikale Hauptachse
+                ctx.lineTo(width * 0.3, endY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        function drawNumberLine(currentSum) {
+            const axisX = width * 0.2;
+            const startY = height * 0.85;
+            const endY = height * 0.15;
+            const scaleLength = startY - endY;
+
+            // Haupt-Achse (Der 1D Zahlenstrahl von 0 bis 0.2)
+            const maxVal = 0.2; // Wertebereich der Achse
+            
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(axisX, startY);
+            ctx.lineTo(axisX, endY);
+            ctx.stroke();
+
+            // Markierung 1/7
+            const targetVal = 1 / 7;
+            const targetY = startY - (targetVal / maxVal) * scaleLength;
+
+            ctx.strokeStyle = "#ff0055";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(axisX - 15, targetY);
+            ctx.lineTo(axisX + 15, targetY);
+            ctx.stroke();
+
+            ctx.fillStyle = "#ff0055";
+            ctx.font = "12px monospace";
+            ctx.fillText("1/7 (0.142857...)", axisX - 140, targetY + 4);
+
+            // Akkumulierter Wert (Aktueller Punkt)
+            const currentY = startY - (currentSum / maxVal) * scaleLength;
+
+            // Verbindungslicht (Sammler)
+            ctx.strokeStyle = "rgba(100, 255, 218, 0.4)";
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(axisX, currentY);
+            ctx.lineTo(width * 0.5, currentY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Glühender Punkt für den aktuellen Summenwert
+            const glow = ctx.createRadialGradient(axisX, currentY, 0, axisX, currentY, 12);
+            glow.addColorStop(0, '#64ffda');
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(axisX, currentY, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = "#64ffda";
+            ctx.beginPath();
+            ctx.arc(axisX, currentY, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = "bold 12px monospace";
+            ctx.fillText(`Σ = ${currentSum.toFixed(8)}`, axisX + 25, currentY + 4);
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Fortschritt der Rekursion updaten
+            currentProgress += animationSpeed;
+            if (currentProgress > maxDepth + 1) {
+                currentProgress = maxDepth + 1; // Halten am Ende
+            }
+
+            const activeDepth = Math.min(maxDepth - 1, Math.floor(currentProgress));
+            const activePower = Math.pow(3, activeDepth);
+            const activeTerm = activePower / Math.pow(10, activeDepth + 1);
+            const currentSum = calculateSeries(Math.min(maxDepth, currentProgress));
+
+            // UI Werte aktualisieren
+            valDepth.textContent = activeDepth;
+            valPower.textContent = activePower.toLocaleString();
+            valTerm.textContent = activeTerm.toFixed(8);
+            valSum.textContent = currentSum.toFixed(8);
+            valError.textContent = Math.abs((1/7) - currentSum).toFixed(8);
+
+            // 1. Zahlenstrahl zeichnen
+            drawNumberLine(currentSum);
+
+            // 2. Fraktalen Baum zeichnen (Zentrum leicht nach rechts versetzt)
+            const rootX = width * 0.55;
+            const rootY = height * 0.8;
+            const initialLength = height * 0.22;
+            const initialAngle = -Math.PI / 2; // Nach oben gerichtet
+
+            drawTree(rootX, rootY, initialLength, initialAngle, 0, maxDepth, currentProgress);
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
